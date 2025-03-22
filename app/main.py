@@ -2,10 +2,25 @@ from fastapi import FastAPI
 from typing import Union
 from fastapi.responses import JSONResponse
 from app.api.routes import patients, doctors, MedicalRecords, Medicines, Appointments
+from pymongo import MongoClient
+from app.core.config import settings
+from fastapi.exceptions import HTTPException
 
 
 
 app = FastAPI(title="Swecha Health Records System (SHRS)", version="1.0.0")
+# Connect to MongoDB
+client = MongoClient(settings.MONGODB_URI)
+db = client[settings.DATABASE_NAME]
+
+app.get("/health")
+async def health_check():
+    try:
+        # Attempt to list collections to check the connection
+        collections = db.list_collection_names()
+        return {"status": "ok", "collections": collections}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 app.include_router(patients.router, prefix="/Patients", tags=["patients"])
 app.include_router(doctors.router, prefix="/Doctors", tags=["doctors"])
