@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from typing import Union
 from fastapi.responses import JSONResponse
-from app.api.routes import patients, doctors, MedicalRecords, Medicines
+from app.api.routes import patients, doctors, MedicalRecords, Medicines, Appointments
 
 
 
@@ -11,4 +11,5 @@ app.include_router(patients.router, prefix="/Patients", tags=["patients"])
 app.include_router(doctors.router, prefix="/Doctors", tags=["doctors"])
 app.include_router(MedicalRecords.router, prefix="/MedicalRecords", tags=["MedicalRecords"])
 app.include_router(Medicines.router, prefix="/Medicines", tags=["Medicines"])
+app.include_router(Appointments.router, prefix="/Appointments", tags=["Appointments"])
 
