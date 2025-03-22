@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Settings:
-    MONGODB_URI: str = os.getenv("mongodb+srv://manishpandey021108:U9UJtLSz8XcCE2pG@shrsh.gxpa4.mongodb.net/")
+    MONGODB_URI: str = os.getenv("MONGODB_URI")
     DATABASE_NAME: str = os.getenv("DATABASE_NAME", "SHRSH")
 
 settings = Settings()
