@@ -10,7 +10,7 @@ from app.schemas.auth import Token, TokenData, UserCreate, User
 from app.core.config import settings
 
 # Secret key to encode JWT tokens
-SECRET_KEY = "your_secret_key"
+SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

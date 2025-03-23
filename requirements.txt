@@ -9,3 +9,5 @@ pandas==1.5.1
 celery==5.2.7
 motor
 pymongo dnspython
+python-multipart
+pydantic_settings
