@@ -1,21 +1,44 @@
-from fastapi import APIRouter
-class Patients():
-    Patient_id = int
-    Patient_name = str
-    age = int
-    health_issues = str
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List, Optional
+from pydantic import BaseModel
+from app.api.routes.auth import get_current_active_user
+from app.schemas.auth import User
 
-router = APIRouter()    
+class Patient(BaseModel):
+    patient_id: int
+    patient_name: str
+    age: int
+    health_issues: Optional[str] = None
 
-@router.get("/patient/{patient_id}")
-def get_patient(patient_id: int):
-    return {"patient_id": patient_id}
-@router.post("/patient/{patient_id}")
-def create_patient(patient_id: int):
-    return {"patient_id": patient_id}
-@router.put("/patient/{patient_id}")
-def update_patient(patient_id: int):
-    return {"patient_id": patient_id}
-@router.delete("/patient/{patient_id}")
-def delete_patient(patient_id: int):
-    return {"patient_id": patient_id}
+router = APIRouter()
+
+# In-memory storage for patients
+patients_db = {}
+
+@router.get("/patient/{patient_id}", response_model=Patient)
+async def get_patient(patient_id: int, current_user: User = Depends(get_current_active_user)):
+    patient = patients_db.get(patient_id)
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    return patient
+
+@router.post("/patient/", response_model=Patient)
+async def create_patient(patient: Patient, current_user: User = Depends(get_current_active_user)):
+    if patient.patient_id in patients_db:
+        raise HTTPException(status_code=400, detail="Patient already exists")
+    patients_db[patient.patient_id] = patient
+    return patient
+
+@router.put("/patient/{patient_id}", response_model=Patient)
+async def update_patient(patient_id: int, patient: Patient, current_user: User = Depends(get_current_active_user)):
+    if patient_id not in patients_db:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    patients_db[patient_id] = patient
+    return patient
+
+@router.delete("/patient/{patient_id}", response_model=Patient)
+async def delete_patient(patient_id: int, current_user: User = Depends(get_current_active_user)):
+    patient = patients_db.pop(patient_id, None)
+    if not patient:
+        raise HTTPException(status_code=404, detail="Patient not found")
+    return patient

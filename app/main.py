@@ -13,14 +13,6 @@ app = FastAPI(title="Swecha Health Records System (SHRS)", version="1.0.0")
 client = MongoClient(settings.MONGODB_URI)
 db = client[settings.DATABASE_NAME]
 
-app.get("/health")
-async def health_check():
-    try:
-        # Attempt to list collections to check the connection
-        collections = db.list_collection_names()
-        return {"status": "ok", "collections": collections}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 app.include_router(patients.router, prefix="/Patients", tags=["patients"])
 app.include_router(doctors.router, prefix="/Doctors", tags=["doctors"])
@@ -30,3 +22,6 @@ app.include_router(Appointments.router, prefix="/Appointments", tags=["Appointme
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 
+app.get("/")
+async def root():
+    return {"message": "Welcome to the Swecha Health Records System (SHRS)"}

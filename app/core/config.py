@@ -11,10 +11,11 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = os.getenv("DATABASE_NAME")
 
     class Config:
-        from_attributes = True  # Fix for Pydantic V2
+        env_file = ".env"  # Make sure this line is present!
 
 settings = Settings()
 
-print(f"SECRET_KEY: {settings.SECRET_KEY}")  # Debugging
-print(f"MONGODB_URI: {settings.MONGODB_URI}")  # Debugging
-print(f"DATABASE_NAME: {settings.DATABASE_NAME}")  # Debugging
+# Debugging statements to verify environment variables
+print(f"SECRET_KEY: {settings.SECRET_KEY}")
+print(f"MONGODB_URI: {settings.MONGODB_URI}")
+print(f"DATABASE_NAME: {settings.DATABASE_NAME}")
