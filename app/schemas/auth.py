@@ -1,13 +1,4 @@
-from pydantic import BaseModel
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: str | None = None
-
-
+from pydantic import BaseModel, ConfigDict
 
 class UserBase(BaseModel):
     username: str
@@ -17,14 +8,21 @@ class UserCreate(UserBase):
     password: str
 
 class UserDB(UserBase):
-    id: str
-    hashed_password: str  # This field exists in MongoDB
+    id: int
+    hashed_password: str
+    model_config = ConfigDict(from_attributes=True)
 
 class UserResponse(UserBase):
-    heashed_password: str   
+    hashed_password: str
+    model_config = ConfigDict(from_attributes=True)
 
 class User(UserBase):
-    id: str
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+class TokenData(BaseModel):
+    username: str = None
 
-    class Config:
-        orm_mode = True
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+

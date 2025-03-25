@@ -5,7 +5,7 @@ from app.api.routes import patients, doctors, MedicalRecords, Medicines, Appoint
 from app.core.config import settings
 from app.core.security import decode_access_token
 from app.db.database import SessionLocal, engine, Base
-from app.models import patient  # Import your models here
+from app.models.patients import Patient # Import your models here
 
 # FastAPI app instance
 app = FastAPI(title="Swecha Health Records System (SHRS)", version="1.0.0")
