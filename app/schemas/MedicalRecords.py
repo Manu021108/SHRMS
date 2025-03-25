@@ -22,3 +22,8 @@ class MedicalRecordInDB(MedicalRecordBase):
 
 class MedicalRecord(MedicalRecordInDB):
     pass
+class MedicalRecordResponse(MedicalRecordBase):
+    id: int
+
+    class Config:
+        orm_mode = True

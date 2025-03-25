@@ -1,44 +1,70 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Optional
-from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from typing import List
+from app.schemas.patients import PatientCreate, PatientUpdate, PatientResponse
+from app.db.database import get_db
 from app.api.routes.auth import get_current_active_user
 from app.schemas.auth import User
-
-class Patient(BaseModel):
-    patient_id: int
-    patient_name: str
-    age: int
-    health_issues: Optional[str] = None
+from app.models.patients import Patient
 
 router = APIRouter()
 
-# In-memory storage for patients
-patients_db = {}
+# CRUD operations
+def get_patient(db: Session, patient_id: int):
+    return db.query(Patient).filter(Patient.id == patient_id).first()
 
-@router.get("/patient/{patient_id}", response_model=Patient)
-async def get_patient(patient_id: int, current_user: User = Depends(get_current_active_user)):
-    patient = patients_db.get(patient_id)
+def get_patients(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(Patient).offset(skip).limit(limit).all()
+
+def create_patient(db: Session, patient: PatientCreate):
+    db_patient = Patient(**patient.dict())
+    db.add(db_patient)
+    db.commit()
+    db.refresh(db_patient)
+    return db_patient
+
+def update_patient(db: Session, patient_id: int, patient: PatientUpdate):
+    db_patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if db_patient:
+        for key, value in patient.dict().items():
+            setattr(db_patient, key, value)
+        db.commit()
+        db.refresh(db_patient)
+    return db_patient
+
+def delete_patient(db: Session, patient_id: int):
+    db_patient = db.query(Patient).filter(Patient.id == patient_id).first()
+    if db_patient:
+        db.delete(db_patient)
+        db.commit()
+    return db_patient
+
+# API endpoints
+@router.post("/", response_model=PatientResponse)
+async def create_patient_endpoint(patient: PatientCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+    return create_patient(db, patient)
+
+@router.get("/{patient_id}", response_model=PatientResponse)
+async def get_patient_endpoint(patient_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+    patient = get_patient(db, patient_id)
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient
 
-@router.post("/patient/", response_model=Patient)
-async def create_patient(patient: Patient, current_user: User = Depends(get_current_active_user)):
-    if patient.patient_id in patients_db:
-        raise HTTPException(status_code=400, detail="Patient already exists")
-    patients_db[patient.patient_id] = patient
-    return patient
+@router.get("/", response_model=List[PatientResponse])
+async def get_patients_endpoint(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+    return get_patients(db, skip=skip, limit=limit)
 
-@router.put("/patient/{patient_id}", response_model=Patient)
-async def update_patient(patient_id: int, patient: Patient, current_user: User = Depends(get_current_active_user)):
-    if patient_id not in patients_db:
+@router.put("/{patient_id}", response_model=PatientResponse)
+async def update_patient_endpoint(patient_id: int, patient: PatientUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+    updated_patient = update_patient(db, patient_id, patient)
+    if not updated_patient:
         raise HTTPException(status_code=404, detail="Patient not found")
-    patients_db[patient_id] = patient
-    return patient
+    return updated_patient
 
-@router.delete("/patient/{patient_id}", response_model=Patient)
-async def delete_patient(patient_id: int, current_user: User = Depends(get_current_active_user)):
-    patient = patients_db.pop(patient_id, None)
-    if not patient:
+@router.delete("/{patient_id}", response_model=PatientResponse)
+async def delete_patient_endpoint(patient_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_active_user)):
+    deleted_patient = delete_patient(db, patient_id)
+    if not deleted_patient:
         raise HTTPException(status_code=404, detail="Patient not found")
-    return patient
+    return deleted_patient

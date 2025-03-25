@@ -1,12 +1,8 @@
-from pymongo import MongoClient
-import os
-from dotenv import load_dotenv
+from bs4 import BeautifulSoup 
+import requests
 
-# Load .env variables
-load_dotenv(override=True)
+url = "http://127.0.0.1:8000/protected"
+headers = {"Authorization": "Bearer your_token"}
+response = requests.get(url, headers=headers)
 
-client = MongoClient(os.getenv("MONGODB_URI"))
-db = client[os.getenv("DATABASE_NAME")]
-
-user = db.users.find_one({"email": "manish@example.com"})
-print("User in DB:", user)
+print(response.json())  # Check response

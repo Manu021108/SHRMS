@@ -22,3 +22,8 @@ class AppointmentInDB(AppointmentBase):
 
 class Appointment(AppointmentInDB):
     pass
+class AppointmentResponse(AppointmentBase):
+    id: int
+
+    class Config:
+        orm_mode = True

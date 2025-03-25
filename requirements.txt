@@ -11,3 +11,4 @@ motor
 pymongo dnspython
 python-multipart
 pydantic_settings
+pylance
