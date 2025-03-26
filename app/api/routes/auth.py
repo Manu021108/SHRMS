@@ -6,6 +6,7 @@ from app.schemas.auth import UserCreate, UserResponse, Token, TokenData
 from app.core.config import settings
 from app.services.authService import create_access_token, decode_access_token, get_user, authenticate_user, create_user
 from app.db.database import get_db
+from app.models.role import Role
 from jose import JWTError
 
 router = APIRouter()
@@ -37,8 +38,23 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
 async def get_current_active_user(current_user: UserResponse = Depends(get_current_user)):
     return current_user
 
+def check_role(required_role: str):
+    def role_checker(current_user: UserResponse = Depends(get_current_active_user)):
+        if current_user.role.name != required_role:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You do not have the required permissions",
+            )
+        return current_user
+    return role_checker
+
 @router.post("/users/", response_model=UserResponse)
 async def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    # Check if the provided role exists
+    role = db.query(Role).filter(Role.id == user.role_id).first()
+    if not role:
+        raise HTTPException(status_code=400, detail="Invalid role ID")
+    
     return create_user(db, user)
 
 @router.post("/token", response_model=Token)

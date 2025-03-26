@@ -9,6 +9,8 @@ class Patient(Base):
     patient_name = Column(String, index=True)
     age = Column(Integer)
     health_issues = Column(Text, nullable=True)
+    role = Column(String, nullable=False, default="patient")  # Role field
+
 
     medical_records = relationship("MedicalRecord", back_populates="patient")
     appointments = relationship("Appointment", back_populates="patient")
