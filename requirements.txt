@@ -7,8 +7,9 @@ requests==2.28.1
 numpy==1.23.4
 pandas==1.5.1
 celery==5.2.7
-motor
-pymongo dnspython
 python-multipart
 pydantic_settings
 pylance
+fastapi sqlalchemy
+passlib
+alembic

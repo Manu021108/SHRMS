@@ -1,8 +1,8 @@
-"""Reattempt Initial Migration
+"""Fix circular imports
 
-Revision ID: 6835ef69c6f2
-Revises: 61ae64da02dc
-Create Date: 2025-03-25 12:43:37.683813
+Revision ID: 1d7207020dee
+Revises: 
+Create Date: 2025-03-26 10:09:14.531166
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6835ef69c6f2'
-down_revision: Union[str, None] = '61ae64da02dc'
+revision: str = '1d7207020dee'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

@@ -1,8 +1,11 @@
-from bs4 import BeautifulSoup 
-import requests
+from app.db.database import Base
+from sqlalchemy import create_engine
+  # Ensure this contains your correct DB URL
+from app.db.database import Base
+from pydantic_settings import BaseSettings
+DATABASE_URL= "postgresql://postgres:Manish@localhost:5432/shrms_db"
 
-url = "http://127.0.0.1:8000/protected"
-headers = {"Authorization": "Bearer your_token"}
-response = requests.get(url, headers=headers)
+engine = create_engine(DATABASE_URL)
 
-print(response.json())  # Check response
+# Check detected tables
+print(Base.metadata.tables.keys())
