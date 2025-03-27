@@ -1,17 +1,13 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from app.db.database import Base
+from app.models import Base
 
 class Prescription(Base):
     __tablename__ = "prescriptions"
 
     id = Column(Integer, primary_key=True, index=True)
-    patient_id = Column(Integer, ForeignKey("patients.id", ondelete="CASCADE"))
-    doctor_id = Column(Integer, ForeignKey("doctors.id", ondelete="CASCADE"))
-    medicine_id = Column(Integer, ForeignKey("medicines.id", ondelete="CASCADE"))
-    dosage = Column(String, nullable=False)
-    instructions = Column(Text, nullable=True)
+    details = Column(String, nullable=False)
+    patient_id = Column(Integer, ForeignKey("patients.id"))
 
+    # ✅ Link only to patients
     patient = relationship("Patient", back_populates="prescriptions")
-    doctor = relationship("Doctor", back_populates="prescriptions")
-    medicine = relationship("Medicine", back_populates="prescriptions")

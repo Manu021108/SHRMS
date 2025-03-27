@@ -10,5 +10,6 @@ from app.models.Appointments import Appointment
 from app.models.user import User
 from app.models.medicines import Medicine
 from app.models.role import Role
+from app.models.prescription import Prescription
 
-__all__ = ["Base", "Patient", "Doctor", "MedicalRecord", "Appointment", "User", "Medicine", "Role"]
+__all__ = ["Base", "Patient", "Doctor", "MedicalRecord", "Appointment", "User", "Medicine", "Role", "Prescription"]

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from app.api.routes import patients, doctors, MedicalRecords, Medicines, Appointments, auth
+from app.api.routes import patients, doctors, MedicalRecords, Medicines, Appointments, auth, prescription, protected_route
 from app.core.config import settings
 from app.core.security import decode_access_token
 from app.db.database import SessionLocal, engine, Base
@@ -43,7 +43,8 @@ app.include_router(MedicalRecords.router, prefix="/MedicalRecords", tags=["Medic
 app.include_router(Medicines.router, prefix="/Medicines", tags=["Medicines"])
 app.include_router(Appointments.router, prefix="/Appointments", tags=["appointments"])
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
-
+app.include_router(prescription.router, prefix="/prescription", tags=["Priscription"])
+app.include_router(protected_route.router, prefix="/RBAC", tags=["Protected_routes"])
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Swecha Health Records System (SHRS)"}
